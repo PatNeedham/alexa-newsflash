@@ -51,6 +51,7 @@ var AlexaSkill = require('./AlexaSkill');
  * URL prefix to download history content from Wikipedia
  */
 var urlPrefix = 'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&explaintext=&exsectionformat=plain&redirects=&titles=';
+var nytUrlPrefix = 'https://api.nytimes.com/svc/search/v2/articlesearch.json?api-key=1a2666b123d0480aab449904c016b58f&q=';
 
 /**
  * Variable defining number of events to be read at one time
@@ -275,6 +276,31 @@ function getJsonEventsFromWikipedia(day, date, eventCallback) {
     }).on('error', function (e) {
         console.log("Got error: ", e);
     });
+}
+
+function getJsonArticlesFromNYTimes(query) {
+    var url = nytUrlPrefix + query;
+
+    https.get(url, function(res) {
+        var body = '';
+        res.on('data', function(chunk) {
+            body += chunk;
+        });
+
+        res.on('end', function() {
+            var stringResult = parseNYTJson(body);
+            eventCallback(stringResult);
+        });
+    }).on('error', function(e) {
+        console.log('Got error: ', e);
+    });
+}
+
+// TODO: finish this method
+function parseNYTJson(inputText) {
+    var retArr = [];
+
+    return retArr;
 }
 
 function parseJson(inputText) {
