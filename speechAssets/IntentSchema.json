@@ -1,0 +1,31 @@
+{
+  "intents": [
+    {
+      "intent": "SearchIntent",
+      "slots": [
+        {
+          "name": "Query",
+          "type": "AMAZON.LITERAL"
+        }
+      ]
+    },
+    {
+      "intent": "GetSummaryIntent",
+      "slots": [
+        {
+          "name": "Number",
+          "type": "ARTICLE_NUMBERS"
+        }
+      ]
+    },
+    {
+      "intent": "ShareArticleIntent"
+    },
+    {
+      "intent": "GetPositiveNewsIntent"
+    },
+    {
+      "intent": "EndIntent"
+    }
+  ]
+}

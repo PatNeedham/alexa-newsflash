@@ -1,0 +1,35 @@
+SearchIntent {duck|Query}
+SearchIntent show me articles about {duck|Query}
+SearchIntent show me articles about {duck fish|Query}
+SearchIntent show me articles about {duck activate welcome|Query}
+SearchIntent show me articles about {bird seal territory license dog|Query}
+SearchIntent show me articles about {lunch carpet key piano bell|Query}
+SearchIntent show me articles about {lunch is always good to eat|Query}
+SearchIntent show me articles about {lunch is always good to eat except|Query}
+SearchIntent show me articles about {lunch is always good to eat except on|Query}
+SearchIntent show me articles about {lunch is always good to eat except on Wednesdays|Query}
+SearchIntent show me articles about {lunch is always good to eat except on Wednesdays but|Query}
+SearchIntent show me articles about {lunch is always good to eat except on Wednesdays but on|Query}
+SearchIntent show me articles about {lunch is always good to eat except on Wednesdays but on Thursdays|Query}
+SearchIntent show me articles about {lunch is always good to eat except on Wednesdays but on Thursdays it|Query}
+SearchIntent show me articles about {lunch is always good to eat except on Wednesdays but on Thursdays it is|Query}
+SearchIntent show me articles about {lunch is always good to eat except on Wednesdays but on Thursdays it is better|Query}
+
+GetSummaryIntent {Number}
+
+EndIntent quit news flash
+EndIntent end
+
+ShareArticleIntent share this on Twitter
+ShareArticleIntent share this article on Twitter
+ShareArticleIntent Tweet article
+ShareArticleIntent Tweet this article
+ShareArticleIntent alert my peeps
+
+GetPositiveNewsIntent show me good news
+GetPositiveNewsIntent show me only positive news
+
+//Custom Slot Types
+ARTICLE_NUMBERS {
+	one | two | three
+}
