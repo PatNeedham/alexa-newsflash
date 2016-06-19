@@ -101,7 +101,7 @@ NewsFlashSkill.prototype.intentHandlers = {
         handleFirstEventRequest(intent, session, response);
     },
 
-    "GetSummary": function (intent, session, response) {
+    "GetSummaryIntent": function (intent, session, response) {
         handleNextEventRequest(intent, session, response);
     },
 
@@ -218,17 +218,19 @@ function handleFirstEventRequest(intent, session, response) {
  * Gets a poster prepares the speech to reply to the user.
  */
 function handleNextEventRequest(intent, session, response) {
-    var numberSlot = intent.slots.Number;
-    var article = "";
-    if (numberSlot.value == "first") {
+    var number = intent.slots.Number.value;
+    var article;
+
+    if (number === "one") {
         article = globalArticles[0];
-    } else if (numberSlot.value == "second") {
+    } else if (number === "two") {
         article = globalArticles[1];
-    } else if (numberSlot.value == "third") {
+    } else if (number === "three") {
         article = globalArticles[2];
     } else {
 
     }
+
     var cardTitle = "Here is the summary:",
         sessionAttributes = session.attributes,
         result = sessionAttributes.text,
@@ -236,29 +238,30 @@ function handleNextEventRequest(intent, session, response) {
         cardContent = "",
         repromptText = "Do you want to hear the summary for this article?",
         i;
-    if (!result) {
-        speechText = article.summary;
-        //speechText = "With News Flash, you can get current event headlines for any topic.  For example, you could say Brexit, Donald Trump, or NBA Finals. Now, which topic do you want?";
-        cardContent = speechText;
-    } else if (sessionAttributes.index >= result.length) {
-        speechText = "There are no more articles for this topic. Try another topic by saying <break time = \"0.3s\"/> show headlines about Donald Trump.";
-        cardContent = "There are no more articles for this topic. Try another topic by saying, show headlines about Donald Trump.";
-    } else {
-        for (i = 0; i < paginationSize; i++) {
-            if (sessionAttributes.index>= result.length) {
-                break;
-            }
-            speechText = speechText + "<p>" + result[sessionAttributes.index] + "</p> ";
-            cardContent = cardContent + result[sessionAttributes.index] + " ";
-            sessionAttributes.index++;
-        }
-        if (sessionAttributes.index < result.length) {
-            speechText = speechText + " Wanna go deeper in history?";
-            cardContent = cardContent + " Wanna go deeper in history?";
-        }
-    }
 
-    var speechText = article.summary;
+    // if (!result) {
+    //     speechText = article.summary;
+    //     //speechText = "With News Flash, you can get current event headlines for any topic.  For example, you could say Brexit, Donald Trump, or NBA Finals. Now, which topic do you want?";
+    //     cardContent = speechText;
+    // } else if (sessionAttributes.index >= result.length) {
+    //     speechText = "There are no more articles for this topic. Try another topic by saying <break time = \"0.3s\"/> show headlines about Donald Trump.";
+    //     cardContent = "There are no more articles for this topic. Try another topic by saying, show headlines about Donald Trump.";
+    // } else {
+    //     for (i = 0; i < paginationSize; i++) {
+    //         if (sessionAttributes.index>= result.length) {
+    //             break;
+    //         }
+    //         speechText = speechText + "<p>" + result[sessionAttributes.index] + "</p> ";
+    //         cardContent = cardContent + result[sessionAttributes.index] + " ";
+    //         sessionAttributes.index++;
+    //     }
+    //     if (sessionAttributes.index < result.length) {
+    //         speechText = speechText + " Wanna go deeper in history?";
+    //         cardContent = cardContent + " Wanna go deeper in history?";
+    //     }
+    // }
+
+    var speechText = "Summary for " + article.headline + ": " + article.summary;
     var speechOutput = {
         speech: "<speak>" + speechText + "</speak>",
         type: AlexaSkill.speechOutputType.SSML
