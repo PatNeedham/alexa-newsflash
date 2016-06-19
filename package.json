@@ -1,0 +1,22 @@
+{
+  "name": "alexa-newsflash",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PatNeedham/alexa-newsflash.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PatNeedham/alexa-newsflash/issues"
+  },
+  "homepage": "https://github.com/PatNeedham/alexa-newsflash#readme",
+  "dependencies": {
+    "havenondemand": "^1.2.1"
+  }
+}
