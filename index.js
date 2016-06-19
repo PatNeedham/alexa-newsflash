@@ -49,7 +49,6 @@ var AlexaSkill = require('./AlexaSkill');
 /**
  * URL prefix to download history content from Wikipedia
  */
-var urlPrefix = 'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&explaintext=&exsectionformat=plain&redirects=&titles=';
 var nytUrlPrefix = 'https://api.nytimes.com/svc/search/v2/articlesearch.json?api-key=1a2666b123d0480aab449904c016b58f&q=';
 
 /**
@@ -79,7 +78,6 @@ NewsFlashSkill.prototype.constructor = NewsFlashSkill;
 NewsFlashSkill.prototype.eventHandlers.onSessionStarted = function (sessionStartedRequest, session) {
     console.log("NewsFlashSkill onSessionStarted requestId: " + sessionStartedRequest.requestId
         + ", sessionId: " + session.sessionId);
-
     // any session init logic would go here
 };
 
@@ -91,18 +89,16 @@ NewsFlashSkill.prototype.eventHandlers.onLaunch = function (launchRequest, sessi
 NewsFlashSkill.prototype.eventHandlers.onSessionEnded = function (sessionEndedRequest, session) {
     console.log("onSessionEnded requestId: " + sessionEndedRequest.requestId
         + ", sessionId: " + session.sessionId);
-
     // any session cleanup logic would go here
 };
 
 NewsFlashSkill.prototype.intentHandlers = {
-
     "GetFirstEventIntent": function (intent, session, response) {
         handleFirstEventRequest(intent, session, response);
     },
 
     "SearchIntent": function(intent, session, response) {
-        handleFirstEventRequest(intent, session, response);  
+        handleFirstEventRequest(intent, session, response);
     },
 
     "GetNextEventIntent": function (intent, session, response) {
@@ -174,22 +170,20 @@ function handleFirstEventRequest(intent, session, response) {
     var sessionAttributes = {};
     // Read the first 3 events, then set the count to 3
     sessionAttributes.index = paginationSize;
-    var date = "";
+    var topic = "";
 
-    // If the user provides a date, then use that, otherwise use today
-    // The date is in server time, not in the user's time zone. So "today" for the user may actually be tomorrow
-    // if (daySlot && daySlot.value) {
-    //     date = new Date(daySlot.value);
-    // } else {
-    //     date = new Date();
-    // }
+    if (querySlot && querySlot.value) {
+        topic = querySlot.value;
+    } else {
+        topic = "Angelhack Brooklyn";
+    }
 
-    var prefixContent = "<p>Headlines for " + querySlot.value + ", </p>";
-    var cardContent = "Headlines for " + querySlot.value + ", ";
+    var prefixContent = "<p>Headlines for " + topic + ", </p>";
+    var cardContent = "Headlines for " + topic + ", ";
 
-    var cardTitle = "Headlines for " + querySlot.value;
+    var cardTitle = "Headlines for " + topic;
 
-    getJsonArticlesFromNYTimes(querySlot.value, function (articles) {
+    getJsonArticlesFromNYTimes(topic, function (articles) {
         var speechText = "",
             i;
         sessionAttributes.text = articles;
