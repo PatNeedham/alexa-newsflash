@@ -144,9 +144,9 @@ NewsFlashSkill.prototype.intentHandlers = {
 function getWelcomeResponse(response) {
     // If we wanted to initialize the session to have some attributes we could add those here.
     var cardTitle = "News Flash Current Events";
-    var repromptText = "With News Flash, you can get current event headlines for any topic.  For example, you could say today, or August thirtieth. Now, which day do you want?";
-    var speechText = "<p>History buff.</p> <p>What day do you want events for?</p>";
-    var cardOutput = "History Buff. What day do you want events for?";
+    var repromptText = "With News Flash, you can get current event headlines for any topic.  For example, you could say Brexit, Donald Trump, or NBA Finals. Now, which topic do you want?";
+    var speechText = "<p>News Flash Current Events.</p> <p>What news topic do you want headlines for?</p>";
+    var cardOutput = "News Flash. What news topic do you want headlines for?";
     // If the user either does not reply to the welcome message or says something that is not
     // understood, they will be prompted again with this text.
 
@@ -165,11 +165,8 @@ function getWelcomeResponse(response) {
  * Gets a poster prepares the speech to reply to the user.
  */
 function handleFirstEventRequest(intent, session, response) {
-    var daySlot = intent.slots.day;
-    var repromptText = "With History Buff, you can get historical events for any day of the year.  For example, you could say today, or August thirtieth. Now, which day do you want?";
-    var monthNames = ["January", "February", "March", "April", "May", "June",
-                      "July", "August", "September", "October", "November", "December"
-    ];
+    var querySlot = intent.slots.Query;
+    var repromptText = "With News Flash, you can get current event headlines for any topic. For example, you could say today, or August thirtieth. Now, which day do you want?";
     var sessionAttributes = {};
     // Read the first 3 events, then set the count to 3
     sessionAttributes.index = paginationSize;
@@ -177,30 +174,30 @@ function handleFirstEventRequest(intent, session, response) {
 
     // If the user provides a date, then use that, otherwise use today
     // The date is in server time, not in the user's time zone. So "today" for the user may actually be tomorrow
-    if (daySlot && daySlot.value) {
-        date = new Date(daySlot.value);
-    } else {
-        date = new Date();
-    }
+    // if (daySlot && daySlot.value) {
+    //     date = new Date(daySlot.value);
+    // } else {
+    //     date = new Date();
+    // }
 
-    var prefixContent = "<p>For " + monthNames[date.getMonth()] + " " + date.getDate() + ", </p>";
+    var prefixContent = "<p>Headlines for " + querySlot.value + ", </p>";
     var cardContent = "For " + monthNames[date.getMonth()] + " " + date.getDate() + ", ";
 
     var cardTitle = "Events on " + monthNames[date.getMonth()] + " " + date.getDate();
 
-    getJsonEventsFromWikipedia(monthNames[date.getMonth()], date.getDate(), function (events) {
+    getJsonArticlesFromNYTimes(querySlot.value, function (articles) {
         var speechText = "",
             i;
-        sessionAttributes.text = events;
+        sessionAttributes.text = articles;
         session.attributes = sessionAttributes;
-        if (events.length == 0) {
-            speechText = "There is a problem connecting to Wikipedia at this time. Please try again later.";
+        if (articles.length == 0) {
+            speechText = "There is a problem connecting to New York Times article search at this time. Please try again later.";
             cardContent = speechText;
             response.tell(speechText);
         } else {
             for (i = 0; i < paginationSize; i++) {
-                cardContent = cardContent + events[i] + " ";
-                speechText = "<p>" + speechText + events[i] + "</p> ";
+                cardContent = cardContent + articles[i].headline + " ";
+                speechText = "<p>" + speechText + articles[i].headline + "</p> ";
             }
             speechText = speechText + " <p>Wanna go deeper in history?</p>";
             var speechOutput = {
@@ -228,7 +225,7 @@ function handleNextEventRequest(intent, session, response) {
         repromptText = "Do you want to know more about what happened on this date?",
         i;
     if (!result) {
-        speechText = "With History Buff, you can get historical events for any day of the year.  For example, you could say Brexit, Donald Trump, or NBA Finals. Now, which topic do you want?";
+        speechText = "With News Flash, you can get current event headlines for any topic.  For example, you could say Brexit, Donald Trump, or NBA Finals. Now, which topic do you want?";
         cardContent = speechText;
     } else if (sessionAttributes.index >= result.length) {
         speechText = "There are no more articles for this topic. Try another topic by saying <break time = \"0.3s\"/> show headlines about Donald Trump.";
@@ -277,7 +274,7 @@ function getJsonEventsFromWikipedia(day, date, eventCallback) {
     });
 }
 
-function getJsonArticlesFromNYTimes(query) {
+function getJsonArticlesFromNYTimes(query, eventCallback) {
     var url = nytUrlPrefix + query;
 
     https.get(url, function(res) {
