@@ -101,6 +101,10 @@ NewsFlashSkill.prototype.intentHandlers = {
         handleFirstEventRequest(intent, session, response);
     },
 
+    "SearchIntent": function(intent, session, response) {
+        handleFirstEventRequest(intent, session, response);  
+    },
+
     "GetNextEventIntent": function (intent, session, response) {
         handleNextEventRequest(intent, session, response);
     },
@@ -181,9 +185,9 @@ function handleFirstEventRequest(intent, session, response) {
     // }
 
     var prefixContent = "<p>Headlines for " + querySlot.value + ", </p>";
-    var cardContent = "For " + monthNames[date.getMonth()] + " " + date.getDate() + ", ";
+    var cardContent = "Headlines for " + querySlot.value + ", ";
 
-    var cardTitle = "Events on " + monthNames[date.getMonth()] + " " + date.getDate();
+    var cardTitle = "Headlines for " + querySlot.value;
 
     getJsonArticlesFromNYTimes(querySlot.value, function (articles) {
         var speechText = "",
