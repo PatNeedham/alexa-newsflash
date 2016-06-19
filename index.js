@@ -41,6 +41,8 @@ var APP_ID = undefined; //replace with 'amzn1.echo-sdk-ams.app.[your-unique-valu
 
 var https = require('https');
 
+var havenondemand = require('havenondemand');
+
 /**
  * The AlexaSkill Module that has the AlexaSkill prototype and helper functions
  */
@@ -50,6 +52,7 @@ var AlexaSkill = require('./AlexaSkill');
  * URL prefix to download history content from Wikipedia
  */
 var nytUrlPrefix = 'https://api.nytimes.com/svc/search/v2/articlesearch.json?api-key=1a2666b123d0480aab449904c016b58f&q=';
+var hodUrlPrefix = 'https://api.havenondemand.com/1/api/sync/analyzesentiment/v1?apikey=f478ca5e-eacb-4720-b412-4ee86dd95dff&url='
 
 /**
  * Variable defining number of events to be read at one time
@@ -269,14 +272,69 @@ function handleTweetRequest(intent, session, response) {
 
 }
 
+var positiveArticles = [];
+
 // TODO finish function
 function handlePositiveNewsRequest(intent, session, response) {
+    var speechText = "an error occurred in handle positive articles. never got the sentiments";
+    var apikey = "f478ca5e-eacb-4720-b412-4ee86dd95dff";
+    var client = new havenondemand.HODClient(apikey, 'v1');
 
+    getPositiveJsonArticlesFromNYTimes(function(articlesList) {
+        for (var i = 0; i < articlesList.length; i++) {
+            var url = articlesList.results[i].url;
+            var data = {'url' : url};
+            client.call('analyzesentiment',data,function(err, resp, body) {
+                if (err) {
+                    console.log("Error: " + err);
+                } else {
+                    var newArticle = articlesList.results[i];
+                    newArticle.sentiment = resp.body.aggregate.sentiment;
+                    positiveArticles.push(newArticle);
+                    if (positiveArticles.length == articlesList.length) {
+                        var onlyPositives = [];
+                        for (var j = 0; j < positiveArticles.length; j++) {
+                            if (positiveArticles[i].sentiment === 'positive') {
+                                onlyPositives.push(positiveArticles[i]);
+                            }
+                        }
+                        var cardContent = "";
+                        var amount = onlyPositives.length;
+                        speechText = "There are " + amount + " positive articles in the list. Here are the top three.";
+                        for (var k = 0; k < 3; k++) {
+                            cardContent = cardContent + onlyPositives[k].title + " ";
+                            speechText += "Article " + (i + 1) + ": <p>" + onlyPositives[k].title + "</p> ";
+                        }
+                        speechText += "<p>Want a summary on article 1, 2, or 3?";
+                        var speechOutput = {
+                            speech: "<speak>" + prefixContent + speechText + "</speak>",
+                            type: AlexaSkill.speechOutputType.SSML
+                        };
+                        var repromptOutput = {
+                            speech: "Error, inside reprompt text",
+                            type: AlexaSkill.speechOutputType.PLAIN_TEXT
+                        };
+                        response.askWithCard(speechOutput, repromptOutput, "Here are the three positive articles", cardContent);
+                    }
+                }
+            })
+        }
+    });
+
+    var speechOutput = {
+        speech: "<speak>" + speechText + "</speak>",
+        type: AlexaSkill.speechOutputType.PLAIN_TEXT
+    };
+    response.askWithCard(speechOutput, speechOutput, "", "");
 }
 
 // TODO finish function
 function handleEndRequest(intent, session, response) {
-
+    var speechOutput = {
+            speech: "Goodbye",
+            type: AlexaSkill.speechOutputType.PLAIN_TEXT
+    };
+    response.tell(speechOutput);
 }
 
 function getJsonEventsFromWikipedia(day, date, eventCallback) {
@@ -301,6 +359,23 @@ function getJsonEventsFromWikipedia(day, date, eventCallback) {
 function getJsonArticlesFromNYTimes(query, eventCallback) {
     var url = nytUrlPrefix + query;
 
+    https.get(url, function(res) {
+        var body = '';
+        res.on('data', function(chunk) {
+            body += chunk;
+        });
+
+        res.on('end', function() {
+            var articlesList = parseNYTJson(JSON.parse(body));
+            eventCallback(articlesList);
+        });
+    }).on('error', function(e) {
+        console.log('Got error: ', e);
+    });
+}
+
+function getPositiveJsonArticlesFromNYTimes(eventCallback) {
+    var url = "https://api.nytimes.com/svc/topstories/v2/home.json?api-key=1a2666b123d0480aab449904c016b58f";
     https.get(url, function(res) {
         var body = '';
         res.on('data', function(chunk) {
