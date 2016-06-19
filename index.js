@@ -106,9 +106,9 @@ NewsFlashSkill.prototype.intentHandlers = {
     },
 
     "AMAZON.HelpIntent": function (intent, session, response) {
-        var speechText = "With History Buff, you can get historical events for any day of the year.  " +
-            "For example, you could say today, or August thirtieth, or you can say exit. Now, which day do you want?";
-        var repromptText = "Which day do you want?";
+        var speechText = "With News Flash, you can get current event headlines for any topic.  " +
+            "For example, you could say Brexit, Donald Trump, or NBA Finals. Now, which topic do you want?";
+        var repromptText = "Which topic do you want?";
         var speechOutput = {
             speech: speechText,
             type: AlexaSkill.speechOutputType.PLAIN_TEXT
@@ -143,8 +143,8 @@ NewsFlashSkill.prototype.intentHandlers = {
 
 function getWelcomeResponse(response) {
     // If we wanted to initialize the session to have some attributes we could add those here.
-    var cardTitle = "This Day in History";
-    var repromptText = "With History Buff, you can get historical events for any day of the year.  For example, you could say today, or August thirtieth. Now, which day do you want?";
+    var cardTitle = "News Flash Current Events";
+    var repromptText = "With News Flash, you can get current event headlines for any topic.  For example, you could say today, or August thirtieth. Now, which day do you want?";
     var speechText = "<p>History buff.</p> <p>What day do you want events for?</p>";
     var cardOutput = "History Buff. What day do you want events for?";
     // If the user either does not reply to the welcome message or says something that is not
@@ -228,11 +228,11 @@ function handleNextEventRequest(intent, session, response) {
         repromptText = "Do you want to know more about what happened on this date?",
         i;
     if (!result) {
-        speechText = "With History Buff, you can get historical events for any day of the year.  For example, you could say today, or August thirtieth. Now, which day do you want?";
+        speechText = "With History Buff, you can get historical events for any day of the year.  For example, you could say Brexit, Donald Trump, or NBA Finals. Now, which topic do you want?";
         cardContent = speechText;
     } else if (sessionAttributes.index >= result.length) {
-        speechText = "There are no more events for this date. Try another date by saying <break time = \"0.3s\"/> get events for august thirtieth.";
-        cardContent = "There are no more events for this date. Try another date by saying, get events for august thirtieth.";
+        speechText = "There are no more articles for this topic. Try another topic by saying <break time = \"0.3s\"/> show headlines about Donald Trump.";
+        cardContent = "There are no more articles for this topic. Try another topic by saying, show headlines about Donald Trump.";
     } else {
         for (i = 0; i < paginationSize; i++) {
             if (sessionAttributes.index>= result.length) {
