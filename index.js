@@ -34,6 +34,15 @@
  * Alexa: "Tweeting link! Good bye!"
  */
 
+var Twitter = require('twitter');
+
+var client = new Twitter({
+  consumer_key: '',
+  consumer_secret: '',
+  access_token_key: '',
+  access_token_secret: ''
+});
+
 /**
  * App ID for the skill
  */
@@ -113,8 +122,8 @@ NewsFlashSkill.prototype.intentHandlers = {
         handlePositiveNewsRequest(intent, session, response);
     },
 
-    "EndIntent": function(intent, session, response) {
-        handleEndRequest(intent, session, response);
+    "TestTwitterIntent": function(intent, session, response) {
+        handleTestTwitterRequest(intent, session, response);
     },
 
     "AMAZON.HelpIntent": function (intent, session, response) {
@@ -174,6 +183,7 @@ function getWelcomeResponse(response) {
 }
 
 var globalArticles = "";
+var articleToTweet = null;
 
 /**
  * Gets a poster prepares the speech to reply to the user.
@@ -235,10 +245,13 @@ function handleNextEventRequest(intent, session, response) {
 
     if (number === "one" || number === "1") {
         article = globalArticles[0];
+        articleToTweet = 0;
     } else if (number === "two" || number === "2") {
         article = globalArticles[1];
+        articleToTweet = 1;
     } else if (number === "three" || number === "3") {
         article = globalArticles[2];
+        articleToTweet = 2;
     } else {
 
     }
@@ -252,7 +265,8 @@ function handleNextEventRequest(intent, session, response) {
         i;
 
     var speechText = "Summary for " + article.headline + ": " + article.summary;
-    speechText += ". What else can I help with?"
+
+    speechText += "What else can I help with? You can say 'Tweet article' or 'Positive articles only'"
     var speechOutput = {
         speech: "<speak>" + speechText + "</speak>",
         type: AlexaSkill.speechOutputType.SSML
@@ -266,16 +280,57 @@ function handleNextEventRequest(intent, session, response) {
 
 // TODO finish function
 function handleTweetRequest(intent, session, response) {
+    var article = globalArticles[articleToTweet || 1];
+    var articleUrl = article.url;
+
+    client.post('statuses/update', {status: 'Cool article: ' + articleUrl},  function(error, tweet, newResponse){
+        if (error) {
+            console.log(error);
+        } else {
+            var speechText = "Tweet complete! What else can I help you with?";
+            var cardTitle = "Tweet complete";
+            var cardContent = "Tweet complete";
+            var repromptText= "Tweet complete. What else can I help you with?";
+
+            var repromptOutput = {
+                speech: repromptText,
+                type: AlexaSkill.speechOutputType.PLAIN_TEXT
+            };
+
+            var speechOutput = {
+                speech: "<speak>" + speechText + "</speak>",
+                type: AlexaSkill.speechOutputType.SSML
+            };
+
+            console.log("success");
+            response.askWithCard(speechOutput, repromptOutput, cardTitle, cardContent);
+        }
+    });
+}
+
+function handleTestTwitterRequest(intent, session, response) {
+    client.post('statuses/update', {status: 'Tweeting from alexa. SSSssup?'}, function(error, tweet, newResponse) {
+        if (error) {
+            console.log(error);
+        } else {
+            var speechText = "tweet complete! Goodbye";
+            var cardTitle = "Tweet complete";
+            var cardContent = "Tweet complete";
+            var repromptOutput= "Tweet complete";
+
+            var speechOutput = {
+                speech: "<speak>" + speechText + "</speak>",
+                type: AlexaSkill.speechOutputType.SSML
+            };
+
+            response.askWithCard(speechOutput, repromptOutput, cardTitle, cardContent);
+        }
+    });
 
 }
 
 // TODO finish function
 function handlePositiveNewsRequest(intent, session, response) {
-
-}
-
-// TODO finish function
-function handleEndRequest(intent, session, response) {
 
 }
 
