@@ -24,16 +24,15 @@
  * Alexa: "Good bye!"
  *
  * Dialog model:
- * User:  "Alexa, open History Buff"
- * Alexa: "History Buff. What day do you want events for?"
- * User:  "August thirtieth."
- * Alexa: "For August thirtieth, in 2003, [...] . Wanna go deeper in history?"
- * User:  "Yes."
- * Alexa: "In 1995, Bosnian war [...] . Wanna go deeper in history?"
- * User: "No."
- * Alexa: "Good bye!"
+ * User:  "Alexa, open News Flash"
+ * Alexa: "News Flash. What topic do you want headlines for?"
+ * User:  "Brexit."
+ * Alexa: "Brexit, here are today's top headlines: [...]. Want summaries? You can say first, second, third, or all"
+ * User:  "First"
+ * Alexa: "Paul Krugman Op-Ed column [...]. Wanna tweet?"
+ * User: "Yes."
+ * Alexa: "Tweeting link! Good bye!"
  */
-
 
 /**
  * App ID for the skill
@@ -64,39 +63,39 @@ var paginationSize = 3;
 var delimiterSize = 2;
 
 /**
- * HistoryBuffSkill is a child of AlexaSkill.
+ * NewsFlashSkill is a child of AlexaSkill.
  * To read more about inheritance in JavaScript, see the link below.
  *
  * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Introduction_to_Object-Oriented_JavaScript#Inheritance
  */
-var HistoryBuffSkill = function() {
+var NewsFlashSkill = function() {
     AlexaSkill.call(this, APP_ID);
 };
 
 // Extend AlexaSkill
-HistoryBuffSkill.prototype = Object.create(AlexaSkill.prototype);
-HistoryBuffSkill.prototype.constructor = HistoryBuffSkill;
+NewsFlashSkill.prototype = Object.create(AlexaSkill.prototype);
+NewsFlashSkill.prototype.constructor = NewsFlashSkill;
 
-HistoryBuffSkill.prototype.eventHandlers.onSessionStarted = function (sessionStartedRequest, session) {
-    console.log("HistoryBuffSkill onSessionStarted requestId: " + sessionStartedRequest.requestId
+NewsFlashSkill.prototype.eventHandlers.onSessionStarted = function (sessionStartedRequest, session) {
+    console.log("NewsFlashSkill onSessionStarted requestId: " + sessionStartedRequest.requestId
         + ", sessionId: " + session.sessionId);
 
     // any session init logic would go here
 };
 
-HistoryBuffSkill.prototype.eventHandlers.onLaunch = function (launchRequest, session, response) {
-    console.log("HistoryBuffSkill onLaunch requestId: " + launchRequest.requestId + ", sessionId: " + session.sessionId);
+NewsFlashSkill.prototype.eventHandlers.onLaunch = function (launchRequest, session, response) {
+    console.log("NewsFlashSkill onLaunch requestId: " + launchRequest.requestId + ", sessionId: " + session.sessionId);
     getWelcomeResponse(response);
 };
 
-HistoryBuffSkill.prototype.eventHandlers.onSessionEnded = function (sessionEndedRequest, session) {
+NewsFlashSkill.prototype.eventHandlers.onSessionEnded = function (sessionEndedRequest, session) {
     console.log("onSessionEnded requestId: " + sessionEndedRequest.requestId
         + ", sessionId: " + session.sessionId);
 
     // any session cleanup logic would go here
 };
 
-HistoryBuffSkill.prototype.intentHandlers = {
+NewsFlashSkill.prototype.intentHandlers = {
 
     "GetFirstEventIntent": function (intent, session, response) {
         handleFirstEventRequest(intent, session, response);
@@ -349,7 +348,7 @@ function parseJson(inputText) {
 // Create the handler that responds to the Alexa Request.
 exports.handler = function (event, context) {
     // Create an instance of the HistoryBuff Skill.
-    var skill = new HistoryBuffSkill();
+    var skill = new NewsFlashSkill();
     skill.execute(event, context);
 };
 
