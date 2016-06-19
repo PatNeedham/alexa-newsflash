@@ -101,7 +101,7 @@ NewsFlashSkill.prototype.intentHandlers = {
         handleFirstEventRequest(intent, session, response);
     },
 
-    "GetNextEventIntent": function (intent, session, response) {
+    "GetSummary": function (intent, session, response) {
         handleNextEventRequest(intent, session, response);
     },
 
