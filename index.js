@@ -34,6 +34,15 @@
  * Alexa: "Tweeting link! Good bye!"
  */
 
+var Twitter = require('twitter');
+
+var client = new Twitter({
+  consumer_key: '',
+  consumer_secret: '',
+  access_token_key: '',
+  access_token_secret: ''
+});
+
 /**
  * App ID for the skill
  */
@@ -174,6 +183,7 @@ function getWelcomeResponse(response) {
 }
 
 var globalArticles = "";
+var articleToTweet = null;
 
 /**
  * Gets a poster prepares the speech to reply to the user.
@@ -235,10 +245,13 @@ function handleNextEventRequest(intent, session, response) {
 
     if (number === "one" || number === "1") {
         article = globalArticles[0];
+        articleToTweet = 0;
     } else if (number === "two" || number === "2") {
         article = globalArticles[1];
+        articleToTweet = 1;
     } else if (number === "three" || number === "3") {
         article = globalArticles[2];
+        articleToTweet = 2;
     } else {
 
     }
@@ -266,6 +279,14 @@ function handleNextEventRequest(intent, session, response) {
 
 // TODO finish function
 function handleTweetRequest(intent, session, response) {
+    var article = globalArticles[articleToTweet || 1]
+      , articleUrl = article.url;
+
+    client.post('statuses/update', {status: 'Cool article: ' + articleUrl},  function(error, tweet, response){
+      if(error) throw error;
+      console.log(tweet);  // Tweet body.
+      console.log(response);  // Raw response object.
+    });
 
 }
 
