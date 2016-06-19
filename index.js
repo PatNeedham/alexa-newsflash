@@ -236,27 +236,27 @@ function handleNextEventRequest(intent, session, response) {
         cardContent = "",
         repromptText = "Do you want to hear the summary for this article?",
         i;
-    // if (!result) {
-    //     speechText = article.summary;
-    //     //speechText = "With News Flash, you can get current event headlines for any topic.  For example, you could say Brexit, Donald Trump, or NBA Finals. Now, which topic do you want?";
-    //     cardContent = speechText;
-    // } else if (sessionAttributes.index >= result.length) {
-    //     speechText = "There are no more articles for this topic. Try another topic by saying <break time = \"0.3s\"/> show headlines about Donald Trump.";
-    //     cardContent = "There are no more articles for this topic. Try another topic by saying, show headlines about Donald Trump.";
-    // } else {
-    //     for (i = 0; i < paginationSize; i++) {
-    //         if (sessionAttributes.index>= result.length) {
-    //             break;
-    //         }
-    //         speechText = speechText + "<p>" + result[sessionAttributes.index] + "</p> ";
-    //         cardContent = cardContent + result[sessionAttributes.index] + " ";
-    //         sessionAttributes.index++;
-    //     }
-    //     if (sessionAttributes.index < result.length) {
-    //         speechText = speechText + " Wanna go deeper in history?";
-    //         cardContent = cardContent + " Wanna go deeper in history?";
-    //     }
-    // }
+    if (!result) {
+        speechText = article.summary;
+        //speechText = "With News Flash, you can get current event headlines for any topic.  For example, you could say Brexit, Donald Trump, or NBA Finals. Now, which topic do you want?";
+        cardContent = speechText;
+    } else if (sessionAttributes.index >= result.length) {
+        speechText = "There are no more articles for this topic. Try another topic by saying <break time = \"0.3s\"/> show headlines about Donald Trump.";
+        cardContent = "There are no more articles for this topic. Try another topic by saying, show headlines about Donald Trump.";
+    } else {
+        for (i = 0; i < paginationSize; i++) {
+            if (sessionAttributes.index>= result.length) {
+                break;
+            }
+            speechText = speechText + "<p>" + result[sessionAttributes.index] + "</p> ";
+            cardContent = cardContent + result[sessionAttributes.index] + " ";
+            sessionAttributes.index++;
+        }
+        if (sessionAttributes.index < result.length) {
+            speechText = speechText + " Wanna go deeper in history?";
+            cardContent = cardContent + " Wanna go deeper in history?";
+        }
+    }
 
     var speechText = article.summary;
     var speechOutput = {
