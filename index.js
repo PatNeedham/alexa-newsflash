@@ -288,6 +288,9 @@ function handleTweetRequest(intent, session, response) {
       , articleUrl = article.url;
 
     client.post('statuses/update', {status: 'Cool article: ' + articleUrl},  function(error, tweet, response){
+        if (error) {
+            console.log(error);
+        }
     });
 
     var speechText = "Tweet complete! What else can I help you with?";
