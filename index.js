@@ -288,8 +288,8 @@ function getJsonArticlesFromNYTimes(query) {
         });
 
         res.on('end', function() {
-            var stringResult = parseNYTJson(body);
-            eventCallback(stringResult);
+            var articlesList = parseNYTJson(JSON.parse(body));
+            eventCallback(articlesList);
         });
     }).on('error', function(e) {
         console.log('Got error: ', e);
@@ -297,9 +297,19 @@ function getJsonArticlesFromNYTimes(query) {
 }
 
 // TODO: finish this method
-function parseNYTJson(inputText) {
+function parseNYTJson(jsonObj) {
     var retArr = [];
 
+    var length = 3;
+    for (var i = 0; i < length; i++) {
+        var item = {}
+        item.headline
+        retArr.push({
+            headline: jsonObj.response.docs[i].headline.main,
+            summary: jsonObj.response.docs[i].abstract || jsonObj.response.docs[i].lead_paragraph,
+            url: jsonObj.response.docs[i].web_url
+        });
+    }
     return retArr;
 }
 
