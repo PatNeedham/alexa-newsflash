@@ -161,6 +161,8 @@ function getWelcomeResponse(response) {
     response.askWithCard(speechOutput, repromptOutput, cardTitle, cardOutput);
 }
 
+var globalArticles = "";
+
 /**
  * Gets a poster prepares the speech to reply to the user.
  */
@@ -186,6 +188,7 @@ function handleFirstEventRequest(intent, session, response) {
     getJsonArticlesFromNYTimes(topic, function (articles) {
         var speechText = "",
             i;
+        globalArticles = articles;
         sessionAttributes.text = articles;
         session.attributes = sessionAttributes;
         if (articles.length == 0) {
@@ -195,9 +198,9 @@ function handleFirstEventRequest(intent, session, response) {
         } else {
             for (i = 0; i < paginationSize; i++) {
                 cardContent = cardContent + articles[i].headline + " ";
-                speechText = "<p>" + speechText + articles[i].headline + "</p> ";
+                speechText += "Article " + (i + 1) + ": <p>" + articles[i].headline + "</p> ";
             }
-            speechText = speechText + " <p>Wanna go deeper in history?</p>";
+            speechText = speechText + " <p>Want a summary on article 1, 2, or 3?</p>";
             var speechOutput = {
                 speech: "<speak>" + prefixContent + speechText + "</speak>",
                 type: AlexaSkill.speechOutputType.SSML
@@ -215,33 +218,47 @@ function handleFirstEventRequest(intent, session, response) {
  * Gets a poster prepares the speech to reply to the user.
  */
 function handleNextEventRequest(intent, session, response) {
-    var cardTitle = "More events on this day in history",
+    var numberSlot = intent.slots.Number;
+    var article = "";
+    if (numberSlot.value == "first") {
+        article = globalArticles[0];
+    } else if (numberSlot.value == "second") {
+        article = globalArticles[1];
+    } else if (numberSlot.value == "third") {
+        article = globalArticles[2];
+    } else {
+
+    }
+    var cardTitle = "Here is the summary:",
         sessionAttributes = session.attributes,
         result = sessionAttributes.text,
         speechText = "",
         cardContent = "",
-        repromptText = "Do you want to know more about what happened on this date?",
+        repromptText = "Do you want to hear the summary for this article?",
         i;
-    if (!result) {
-        speechText = "With News Flash, you can get current event headlines for any topic.  For example, you could say Brexit, Donald Trump, or NBA Finals. Now, which topic do you want?";
-        cardContent = speechText;
-    } else if (sessionAttributes.index >= result.length) {
-        speechText = "There are no more articles for this topic. Try another topic by saying <break time = \"0.3s\"/> show headlines about Donald Trump.";
-        cardContent = "There are no more articles for this topic. Try another topic by saying, show headlines about Donald Trump.";
-    } else {
-        for (i = 0; i < paginationSize; i++) {
-            if (sessionAttributes.index>= result.length) {
-                break;
-            }
-            speechText = speechText + "<p>" + result[sessionAttributes.index] + "</p> ";
-            cardContent = cardContent + result[sessionAttributes.index] + " ";
-            sessionAttributes.index++;
-        }
-        if (sessionAttributes.index < result.length) {
-            speechText = speechText + " Wanna go deeper in history?";
-            cardContent = cardContent + " Wanna go deeper in history?";
-        }
-    }
+    // if (!result) {
+    //     speechText = article.summary;
+    //     //speechText = "With News Flash, you can get current event headlines for any topic.  For example, you could say Brexit, Donald Trump, or NBA Finals. Now, which topic do you want?";
+    //     cardContent = speechText;
+    // } else if (sessionAttributes.index >= result.length) {
+    //     speechText = "There are no more articles for this topic. Try another topic by saying <break time = \"0.3s\"/> show headlines about Donald Trump.";
+    //     cardContent = "There are no more articles for this topic. Try another topic by saying, show headlines about Donald Trump.";
+    // } else {
+    //     for (i = 0; i < paginationSize; i++) {
+    //         if (sessionAttributes.index>= result.length) {
+    //             break;
+    //         }
+    //         speechText = speechText + "<p>" + result[sessionAttributes.index] + "</p> ";
+    //         cardContent = cardContent + result[sessionAttributes.index] + " ";
+    //         sessionAttributes.index++;
+    //     }
+    //     if (sessionAttributes.index < result.length) {
+    //         speechText = speechText + " Wanna go deeper in history?";
+    //         cardContent = cardContent + " Wanna go deeper in history?";
+    //     }
+    // }
+
+    var speechText = article.summary;
     var speechOutput = {
         speech: "<speak>" + speechText + "</speak>",
         type: AlexaSkill.speechOutputType.SSML
