@@ -37,10 +37,10 @@
 var Twitter = require('twitter');
 
 var client = new Twitter({
-  consumer_key: '',
-  consumer_secret: '',
-  access_token_key: '',
-  access_token_secret: ''
+  consumer_key: 'tyzOa3A8DSFF2lMpoZ0lZYuh8',
+  consumer_secret: 'wRMJPbRmATqBMeuyDeA8i484L4y6SpQP7ivL0XbrDFh2REZ5Gy',
+  access_token_key: '1426407342-3q2Wj6HfBchCjz1XkH9FLq3gHULW0FQs0Il2UmO',
+  access_token_secret: 'HkpeDEUROro47fI3qPdKc9OcFUbDFhlBCGAuU1zrSXARd'
 });
 
 /**
@@ -124,6 +124,10 @@ NewsFlashSkill.prototype.intentHandlers = {
 
     "EndIntent": function(intent, session, response) {
         handleEndRequest(intent, session, response);
+    },
+
+    "TestTwitterIntent": function(intent, session, response) {
+        handleTestTwitterRequest(intent, session, response);
     },
 
     "AMAZON.HelpIntent": function (intent, session, response) {
@@ -265,7 +269,8 @@ function handleNextEventRequest(intent, session, response) {
         i;
 
     var speechText = "Summary for " + article.headline + ": " + article.summary;
-    speechText += ". What else can I help with?"
+
+    speechText += "What else can I help with? You can say 'Tweet article' or 'Positive articles only'"
     var speechOutput = {
         speech: "<speak>" + speechText + "</speak>",
         type: AlexaSkill.speechOutputType.SSML
@@ -283,11 +288,44 @@ function handleTweetRequest(intent, session, response) {
       , articleUrl = article.url;
 
     client.post('statuses/update', {status: 'Cool article: ' + articleUrl},  function(error, tweet, response){
-      if(error) throw error;
-      console.log(tweet);  // Tweet body.
-      console.log(response);  // Raw response object.
     });
 
+    var speechText = "Tweet complete! What else can I help you with?";
+    var cardTitle = "Tweet complete";
+    var cardContent = "Tweet complete";
+    var repromptText= "Tweet complete. What else can I help you with?";
+
+    var repromptOutput = {
+        speech: repromptText,
+        type: AlexaSkill.speechOutputType.PLAIN_TEXT
+    };
+
+    var speechOutput = {
+        speech: "<speak>" + speechText + "</speak>",
+        type: AlexaSkill.speechOutputType.SSML
+    };
+
+    response.askWithCard(speechOutput, repromptOutput, cardTitle, cardContent);
+}
+
+function handleTestTwitterRequest(intent, session, response) {
+    client.post('statuses/update', {status: 'Tweeting from alexa. sup?'}, function(error, tweet, response) {
+        if (error) {
+            console.log(error);
+        }
+    });
+
+    var speechText = "tweet complete! Goodbye";
+    var cardTitle = "Tweet complete";
+    var cardContent = "Tweet complete";
+    var repromptOutput= "Tweet complete";
+
+    var speechOutput = {
+        speech: "<speak>" + speechText + "</speak>",
+        type: AlexaSkill.speechOutputType.SSML
+    };
+
+    response.askWithCard(speechOutput, repromptOutput, cardTitle, cardContent);
 }
 
 // TODO finish function
