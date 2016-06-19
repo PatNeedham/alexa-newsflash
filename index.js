@@ -178,12 +178,12 @@ function handleFirstEventRequest(intent, session, response) {
         topic = "Angelhack Brooklyn";
     }
 
-    var prefixContent = "<p>Headlines for " + querySlot.value + ", </p>";
-    var cardContent = "Headlines for " + querySlot.value + ", ";
+    var prefixContent = "<p>Headlines for " + topic + ", </p>";
+    var cardContent = "Headlines for " + topic + ", ";
 
-    var cardTitle = "Headlines for " + querySlot.value;
+    var cardTitle = "Headlines for " + topic;
 
-    getJsonArticlesFromNYTimes(querySlot.value, function (articles) {
+    getJsonArticlesFromNYTimes(topic, function (articles) {
         var speechText = "",
             i;
         sessionAttributes.text = articles;
